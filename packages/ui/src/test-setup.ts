@@ -1,3 +1,10 @@
+import { afterEach } from "vitest";
+import { cleanup } from "@testing-library/react";
+
+afterEach(() => {
+  cleanup();
+});
+
 // Mock window.matchMedia for jsdom (not implemented there)
 Object.defineProperty(window, "matchMedia", {
   writable: true,
