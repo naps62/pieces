@@ -18,7 +18,8 @@
   "files": ["dist"],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch"
+    "dev": "tsup --watch",
+    "prepare": "tsup"
   },
   "dependencies": {
     "pg-boss": "^10.0.0",
