@@ -6,7 +6,7 @@ export default defineConfig({
     vite: "src/vite.ts",
     "entry-client": "src/entry-client.tsx",
     router: "src/router.ts",
-    // auth: "src/auth.ts",          // added in Task 6
+    auth: "src/auth.ts",
     schema: "src/schema.ts",
     // root: "src/root.tsx",         // added in Task 7
   },
