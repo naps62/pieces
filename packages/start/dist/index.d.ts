@@ -1,2 +1,12 @@
-
-export {  }
+export { StartViteConfig, createViteConfig } from './vite.js';
+export { createAppRouter } from './router.js';
+export { authActions } from './auth.js';
+export { sessions, users } from './schema.js';
+export { AuthGuard, AuthGuardProps, RootDocument, RootErrorComponent } from './root.js';
+import 'vite';
+import '@tanstack/router-core';
+import '@tanstack/history';
+import '@tanstack/react-router';
+import 'drizzle-orm/pg-core';
+import 'react/jsx-runtime';
+import 'react';

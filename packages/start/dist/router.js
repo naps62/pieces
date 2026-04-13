@@ -1,13 +1,7 @@
-// src/router.ts
-import { createRouter } from "@tanstack/react-router";
-function createAppRouter({
-  routeTree
-}) {
-  return createRouter({
-    routeTree,
-    scrollRestoration: true
-  });
-}
+import {
+  createAppRouter
+} from "./chunk-IBAQ4H6Q.js";
+import "./chunk-MLKGABMK.js";
 export {
   createAppRouter
 };
