@@ -1,5 +1,96 @@
 {
-  "name": "pieces",
+  "name": "@naps62/start",
+  "version": "0.2.0",
   "private": true,
-  "workspaces": ["packages/*"]
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./ui": {
+      "types": "./dist/ui.d.ts",
+      "import": "./dist/ui.js",
+      "require": "./dist/ui.cjs"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.js",
+      "require": "./dist/vite.cjs"
+    },
+    "./entry-client": {
+      "types": "./dist/entry-client.d.ts",
+      "import": "./dist/entry-client.js",
+      "require": "./dist/entry-client.cjs"
+    },
+    "./router": {
+      "types": "./dist/router.d.ts",
+      "import": "./dist/router.js",
+      "require": "./dist/router.cjs"
+    },
+    "./auth": {
+      "types": "./dist/auth.d.ts",
+      "import": "./dist/auth.js",
+      "require": "./dist/auth.cjs"
+    },
+    "./schema": {
+      "types": "./dist/schema.d.ts",
+      "import": "./dist/schema.js",
+      "require": "./dist/schema.cjs"
+    },
+    "./root": {
+      "types": "./dist/root.d.ts",
+      "import": "./dist/root.js",
+      "require": "./dist/root.cjs"
+    },
+    "./job-runner": {
+      "types": "./dist/job-runner.d.ts",
+      "import": "./dist/job-runner.js",
+      "require": "./dist/job-runner.cjs"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepare": "tsup"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "^1.132.0",
+    "@tanstack/react-start": "^1.132.0",
+    "@tailwindcss/vite": "^4.0.6",
+    "@vitejs/plugin-react": "^5.0.4",
+    "bcryptjs": "^3.0.3",
+    "nitro": "npm:nitro-nightly@latest",
+    "pg-boss": "^10.0.0",
+    "postgres": "^3.4.9",
+    "ssh2": "^1.17.0",
+    "tailwindcss": "^4.0.6",
+    "vite-tsconfig-paths": "^6.0.2"
+  },
+  "peerDependencies": {
+    "drizzle-orm": ">=0.45.0",
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0",
+    "vite": ">=7.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.0.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/ssh2": "^1.15.0",
+    "drizzle-orm": "^0.45.2",
+    "jsdom": "^26.1.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tsup": "^8.0.0",
+    "typescript": "^5.8.0",
+    "vite": "^7.1.7",
+    "vitest": "^3.2.1"
+  }
 }

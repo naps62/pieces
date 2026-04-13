@@ -1,0 +1,36 @@
+import { defineConfig } from "tsup";
+
+export default defineConfig({
+  entry: {
+    index: "src/index.ts",
+    ui: "src/ui/index.ts",
+    vite: "src/vite.ts",
+    "entry-client": "src/entry-client.tsx",
+    router: "src/router.ts",
+    auth: "src/auth.ts",
+    schema: "src/schema.ts",
+    root: "src/root.tsx",
+    "job-runner": "src/job-runner/index.ts",
+  },
+  format: ["esm", "cjs"],
+  dts: true,
+  clean: true,
+  splitting: true,
+  external: [
+    "react",
+    "react-dom",
+    "vite",
+    "drizzle-orm",
+    "drizzle-orm/pg-core",
+    "@tailwindcss/vite",
+    "@vitejs/plugin-react",
+    "vite-tsconfig-paths",
+    "nitro",
+    "@tanstack/react-router",
+    "@tanstack/react-start",
+    "bcryptjs",
+    "postgres",
+    "pg-boss",
+    "ssh2",
+  ],
+});

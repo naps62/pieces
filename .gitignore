@@ -1,6 +1,4 @@
 node_modules
 
-# Ignore dist by default, but packages commit their built output
-# so npm consumers get pre-built files from GitHub installs
-dist/
-!packages/*/dist/
+# Commit dist so git-install consumers get pre-built files
+!dist/
