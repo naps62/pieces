@@ -23,10 +23,16 @@ __export(src_exports, {
   Collapsible: () => Collapsible,
   CollapsibleContent: () => CollapsibleContent,
   CollapsibleTrigger: () => CollapsibleTrigger,
+  Drawer: () => Drawer,
   ThemeProvider: () => ThemeProvider,
+  getThemeInitScript: () => getThemeInitScript,
+  isActiveNavItem: () => isActiveNavItem,
+  useBreadcrumbs: () => useBreadcrumbs,
   useCollapsible: () => useCollapsible,
+  useDrawer: () => useDrawer,
   useKeyboardShortcut: () => useKeyboardShortcut,
   usePersistentState: () => usePersistentState,
+  useScrollLock: () => useScrollLock,
   useTheme: () => useTheme
 });
 module.exports = __toCommonJS(src_exports);
@@ -100,10 +106,23 @@ function useKeyboardShortcut(combo, handler, options) {
   }, [enabled, event]);
 }
 
-// src/theme-provider.tsx
+// src/use-scroll-lock.ts
 var import_react3 = require("react");
+function useScrollLock(locked) {
+  (0, import_react3.useEffect)(() => {
+    if (!locked) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [locked]);
+}
+
+// src/theme-provider.tsx
+var import_react4 = require("react");
 var import_jsx_runtime = require("react/jsx-runtime");
-var ThemeContext = (0, import_react3.createContext)(void 0);
+var ThemeContext = (0, import_react4.createContext)(void 0);
 function getSystemTheme() {
   if (typeof window === "undefined") return "light";
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -116,15 +135,18 @@ function ThemeProvider({
   value = { dark: "dark", light: "light" }
 }) {
   const [theme, setTheme] = usePersistentState(storageKey, defaultTheme);
-  const [systemTheme, setSystemTheme] = (0, import_react3.useState)(getSystemTheme);
-  (0, import_react3.useEffect)(() => {
+  const [systemTheme, setSystemTheme] = (0, import_react4.useState)(getSystemTheme);
+  (0, import_react4.useEffect)(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const onChange = () => setSystemTheme(mq.matches ? "dark" : "light");
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, []);
   const resolvedTheme = theme === "system" ? systemTheme : theme;
-  (0, import_react3.useEffect)(() => {
+  const toggleTheme = (0, import_react4.useCallback)(() => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  }, [resolvedTheme, setTheme]);
+  (0, import_react4.useEffect)(() => {
     const el = document.documentElement;
     const lightValue = value.light ?? "light";
     const darkValue = value.dark ?? "dark";
@@ -135,24 +157,28 @@ function ThemeProvider({
       el.setAttribute(attribute, resolvedTheme === "dark" ? darkValue : lightValue);
     }
   }, [resolvedTheme, attribute, value]);
-  const ctx = (0, import_react3.useMemo)(
-    () => ({ theme, resolvedTheme, setTheme }),
-    [theme, resolvedTheme, setTheme]
+  const ctx = (0, import_react4.useMemo)(
+    () => ({ theme, resolvedTheme, setTheme, toggleTheme }),
+    [theme, resolvedTheme, setTheme, toggleTheme]
   );
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ThemeContext.Provider, { value: ctx, children });
 }
 function useTheme() {
-  const ctx = (0, import_react3.useContext)(ThemeContext);
+  const ctx = (0, import_react4.useContext)(ThemeContext);
   if (!ctx) {
     throw new Error("useTheme must be used within a ThemeProvider");
   }
   return ctx;
 }
+function getThemeInitScript(options) {
+  const key = options?.storageKey ?? "theme";
+  return `try{var t=localStorage.getItem(${JSON.stringify(key)});if(t==="light")document.documentElement.classList.remove("dark");else if(t!=="dark"&&!t&&window.matchMedia("(prefers-color-scheme:light)").matches)document.documentElement.classList.remove("dark")}catch(e){}`;
+}
 
 // src/collapsible.tsx
-var import_react4 = require("react");
+var import_react5 = require("react");
 var import_jsx_runtime2 = require("react/jsx-runtime");
-var CollapsibleContext = (0, import_react4.createContext)(
+var CollapsibleContext = (0, import_react5.createContext)(
   void 0
 );
 var noopStorage = {
@@ -172,7 +198,7 @@ function Collapsible({
   storageKey,
   shortcut
 }) {
-  const storageOptions = (0, import_react4.useMemo)(
+  const storageOptions = (0, import_react5.useMemo)(
     () => storageKey ? void 0 : { storage: noopStorage },
     [storageKey]
   );
@@ -181,10 +207,10 @@ function Collapsible({
     defaultOpen,
     storageOptions
   );
-  const toggle = (0, import_react4.useCallback)(() => {
+  const toggle = (0, import_react5.useCallback)(() => {
     setOpenRaw((prev) => !prev);
   }, [setOpenRaw]);
-  const setOpen = (0, import_react4.useCallback)(
+  const setOpen = (0, import_react5.useCallback)(
     (value) => {
       setOpenRaw(value);
     },
@@ -194,7 +220,7 @@ function Collapsible({
   return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(CollapsibleContext.Provider, { value: { open, toggle, setOpen }, children });
 }
 function useCollapsible() {
-  const ctx = (0, import_react4.useContext)(CollapsibleContext);
+  const ctx = (0, import_react5.useContext)(CollapsibleContext);
   if (!ctx) {
     throw new Error("useCollapsible must be used within a Collapsible");
   }
@@ -213,14 +239,87 @@ function CollapsibleContent({
   const ctx = useCollapsible();
   return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_jsx_runtime2.Fragment, { children: typeof children === "function" ? children(ctx) : children });
 }
+
+// src/drawer.tsx
+var import_react6 = require("react");
+var import_jsx_runtime3 = require("react/jsx-runtime");
+var DrawerContext = (0, import_react6.createContext)(void 0);
+function Drawer({
+  children,
+  defaultOpen = false,
+  onOpenChange
+}) {
+  const [open, setOpenRaw] = (0, import_react6.useState)(defaultOpen);
+  useScrollLock(open);
+  const setOpen = (0, import_react6.useCallback)(
+    (value) => {
+      setOpenRaw(value);
+      onOpenChange?.(value);
+    },
+    [onOpenChange]
+  );
+  const toggle = (0, import_react6.useCallback)(() => {
+    setOpenRaw((prev) => {
+      const next = !prev;
+      onOpenChange?.(next);
+      return next;
+    });
+  }, [onOpenChange]);
+  const ctx = (0, import_react6.useMemo)(
+    () => ({ open, setOpen, toggle }),
+    [open, setOpen, toggle]
+  );
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(DrawerContext.Provider, { value: ctx, children });
+}
+function useDrawer() {
+  const ctx = (0, import_react6.useContext)(DrawerContext);
+  if (!ctx) {
+    throw new Error("useDrawer must be used within a Drawer");
+  }
+  return ctx;
+}
+
+// src/nav.ts
+var import_react7 = require("react");
+function computeBreadcrumbs(pathname, config) {
+  if (config.topLinks) {
+    const topLink = config.topLinks.find(
+      ({ href }) => pathname.startsWith(href)
+    );
+    if (topLink) return { section: topLink.label, page: void 0 };
+  }
+  for (const section of config.sections) {
+    if (!pathname.startsWith(section.prefix)) continue;
+    const page = section.links.find(
+      ({ href }) => href === section.prefix ? pathname === section.prefix || pathname === section.prefix + "/" : pathname.startsWith(href)
+    );
+    return { section: section.label, page: page?.label };
+  }
+  return null;
+}
+function useBreadcrumbs(pathname, config) {
+  return (0, import_react7.useMemo)(() => computeBreadcrumbs(pathname, config), [pathname, config]);
+}
+function isActiveNavItem(href, currentPath, sectionPrefix) {
+  if (sectionPrefix && href === sectionPrefix) {
+    return currentPath === href || currentPath === href + "/";
+  }
+  return currentPath.startsWith(href);
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
+  Drawer,
   ThemeProvider,
+  getThemeInitScript,
+  isActiveNavItem,
+  useBreadcrumbs,
   useCollapsible,
+  useDrawer,
   useKeyboardShortcut,
   usePersistentState,
+  useScrollLock,
   useTheme
 });

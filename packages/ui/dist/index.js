@@ -67,8 +67,21 @@ function useKeyboardShortcut(combo, handler, options) {
   }, [enabled, event]);
 }
 
+// src/use-scroll-lock.ts
+import { useEffect as useEffect2 } from "react";
+function useScrollLock(locked) {
+  useEffect2(() => {
+    if (!locked) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [locked]);
+}
+
 // src/theme-provider.tsx
-import { createContext, useContext, useEffect as useEffect2, useMemo, useState as useState2 } from "react";
+import { createContext, useCallback as useCallback2, useContext, useEffect as useEffect3, useMemo, useState as useState2 } from "react";
 import { jsx } from "react/jsx-runtime";
 var ThemeContext = createContext(void 0);
 function getSystemTheme() {
@@ -84,14 +97,17 @@ function ThemeProvider({
 }) {
   const [theme, setTheme] = usePersistentState(storageKey, defaultTheme);
   const [systemTheme, setSystemTheme] = useState2(getSystemTheme);
-  useEffect2(() => {
+  useEffect3(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const onChange = () => setSystemTheme(mq.matches ? "dark" : "light");
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, []);
   const resolvedTheme = theme === "system" ? systemTheme : theme;
-  useEffect2(() => {
+  const toggleTheme = useCallback2(() => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  }, [resolvedTheme, setTheme]);
+  useEffect3(() => {
     const el = document.documentElement;
     const lightValue = value.light ?? "light";
     const darkValue = value.dark ?? "dark";
@@ -103,8 +119,8 @@ function ThemeProvider({
     }
   }, [resolvedTheme, attribute, value]);
   const ctx = useMemo(
-    () => ({ theme, resolvedTheme, setTheme }),
-    [theme, resolvedTheme, setTheme]
+    () => ({ theme, resolvedTheme, setTheme, toggleTheme }),
+    [theme, resolvedTheme, setTheme, toggleTheme]
   );
   return /* @__PURE__ */ jsx(ThemeContext.Provider, { value: ctx, children });
 }
@@ -115,12 +131,16 @@ function useTheme() {
   }
   return ctx;
 }
+function getThemeInitScript(options) {
+  const key = options?.storageKey ?? "theme";
+  return `try{var t=localStorage.getItem(${JSON.stringify(key)});if(t==="light")document.documentElement.classList.remove("dark");else if(t!=="dark"&&!t&&window.matchMedia("(prefers-color-scheme:light)").matches)document.documentElement.classList.remove("dark")}catch(e){}`;
+}
 
 // src/collapsible.tsx
 import {
   createContext as createContext2,
   useContext as useContext2,
-  useCallback as useCallback2,
+  useCallback as useCallback3,
   useMemo as useMemo2
 } from "react";
 import { Fragment, jsx as jsx2 } from "react/jsx-runtime";
@@ -153,10 +173,10 @@ function Collapsible({
     defaultOpen,
     storageOptions
   );
-  const toggle = useCallback2(() => {
+  const toggle = useCallback3(() => {
     setOpenRaw((prev) => !prev);
   }, [setOpenRaw]);
-  const setOpen = useCallback2(
+  const setOpen = useCallback3(
     (value) => {
       setOpenRaw(value);
     },
@@ -185,13 +205,92 @@ function CollapsibleContent({
   const ctx = useCollapsible();
   return /* @__PURE__ */ jsx2(Fragment, { children: typeof children === "function" ? children(ctx) : children });
 }
+
+// src/drawer.tsx
+import {
+  createContext as createContext3,
+  useContext as useContext3,
+  useState as useState3,
+  useCallback as useCallback4,
+  useMemo as useMemo3
+} from "react";
+import { jsx as jsx3 } from "react/jsx-runtime";
+var DrawerContext = createContext3(void 0);
+function Drawer({
+  children,
+  defaultOpen = false,
+  onOpenChange
+}) {
+  const [open, setOpenRaw] = useState3(defaultOpen);
+  useScrollLock(open);
+  const setOpen = useCallback4(
+    (value) => {
+      setOpenRaw(value);
+      onOpenChange?.(value);
+    },
+    [onOpenChange]
+  );
+  const toggle = useCallback4(() => {
+    setOpenRaw((prev) => {
+      const next = !prev;
+      onOpenChange?.(next);
+      return next;
+    });
+  }, [onOpenChange]);
+  const ctx = useMemo3(
+    () => ({ open, setOpen, toggle }),
+    [open, setOpen, toggle]
+  );
+  return /* @__PURE__ */ jsx3(DrawerContext.Provider, { value: ctx, children });
+}
+function useDrawer() {
+  const ctx = useContext3(DrawerContext);
+  if (!ctx) {
+    throw new Error("useDrawer must be used within a Drawer");
+  }
+  return ctx;
+}
+
+// src/nav.ts
+import { useMemo as useMemo4 } from "react";
+function computeBreadcrumbs(pathname, config) {
+  if (config.topLinks) {
+    const topLink = config.topLinks.find(
+      ({ href }) => pathname.startsWith(href)
+    );
+    if (topLink) return { section: topLink.label, page: void 0 };
+  }
+  for (const section of config.sections) {
+    if (!pathname.startsWith(section.prefix)) continue;
+    const page = section.links.find(
+      ({ href }) => href === section.prefix ? pathname === section.prefix || pathname === section.prefix + "/" : pathname.startsWith(href)
+    );
+    return { section: section.label, page: page?.label };
+  }
+  return null;
+}
+function useBreadcrumbs(pathname, config) {
+  return useMemo4(() => computeBreadcrumbs(pathname, config), [pathname, config]);
+}
+function isActiveNavItem(href, currentPath, sectionPrefix) {
+  if (sectionPrefix && href === sectionPrefix) {
+    return currentPath === href || currentPath === href + "/";
+  }
+  return currentPath.startsWith(href);
+}
 export {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
+  Drawer,
   ThemeProvider,
+  getThemeInitScript,
+  isActiveNavItem,
+  useBreadcrumbs,
   useCollapsible,
+  useDrawer,
   useKeyboardShortcut,
   usePersistentState,
+  useScrollLock,
   useTheme
 };

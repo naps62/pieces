@@ -14,6 +14,8 @@ interface KeyboardShortcutOptions {
 }
 declare function useKeyboardShortcut(combo: string, handler: (e: KeyboardEvent) => void, options?: KeyboardShortcutOptions): void;
 
+declare function useScrollLock(locked: boolean): void;
+
 type Theme = "light" | "dark" | "system";
 interface ThemeProviderProps {
     children: React.ReactNode;
@@ -26,9 +28,13 @@ interface ThemeContextValue {
     theme: Theme;
     resolvedTheme: "light" | "dark";
     setTheme: (theme: Theme) => void;
+    toggleTheme: () => void;
 }
 declare function ThemeProvider({ children, defaultTheme, storageKey, attribute, value, }: ThemeProviderProps): react_jsx_runtime.JSX.Element;
 declare function useTheme(): ThemeContextValue;
+declare function getThemeInitScript(options?: {
+    storageKey?: string;
+}): string;
 
 interface CollapsibleContextValue {
     open: boolean;
@@ -51,4 +57,37 @@ declare function CollapsibleContent({ children, }: {
     children: ReactNode | RenderProp;
 }): react_jsx_runtime.JSX.Element;
 
-export { Collapsible, CollapsibleContent, type CollapsibleContextValue, type CollapsibleProps, CollapsibleTrigger, type KeyboardShortcutOptions, type PersistentStateOptions, type Theme, type ThemeContextValue, ThemeProvider, type ThemeProviderProps, useCollapsible, useKeyboardShortcut, usePersistentState, useTheme };
+interface DrawerContextValue {
+    open: boolean;
+    setOpen: (open: boolean) => void;
+    toggle: () => void;
+}
+interface DrawerProps {
+    children: ReactNode;
+    defaultOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
+}
+declare function Drawer({ children, defaultOpen, onOpenChange, }: DrawerProps): react_jsx_runtime.JSX.Element;
+declare function useDrawer(): DrawerContextValue;
+
+interface NavItem {
+    href: string;
+    label: string;
+}
+interface NavSection {
+    label: string;
+    prefix: string;
+    links: readonly NavItem[];
+}
+interface BreadcrumbConfig {
+    topLinks?: readonly NavItem[];
+    sections: readonly NavSection[];
+}
+interface BreadcrumbResult {
+    section: string;
+    page?: string;
+}
+declare function useBreadcrumbs(pathname: string, config: BreadcrumbConfig): BreadcrumbResult | null;
+declare function isActiveNavItem(href: string, currentPath: string, sectionPrefix?: string): boolean;
+
+export { type BreadcrumbConfig, type BreadcrumbResult, Collapsible, CollapsibleContent, type CollapsibleContextValue, type CollapsibleProps, CollapsibleTrigger, Drawer, type DrawerContextValue, type DrawerProps, type KeyboardShortcutOptions, type NavItem, type NavSection, type PersistentStateOptions, type Theme, type ThemeContextValue, ThemeProvider, type ThemeProviderProps, getThemeInitScript, isActiveNavItem, useBreadcrumbs, useCollapsible, useDrawer, useKeyboardShortcut, usePersistentState, useScrollLock, useTheme };
