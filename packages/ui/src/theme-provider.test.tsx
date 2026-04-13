@@ -1,6 +1,6 @@
-import { renderHook, act } from "@testing-library/react";
+import { renderHook, act, render, screen } from "@testing-library/react";
 import { describe, it, expect, beforeEach } from "vitest";
-import { ThemeProvider, useTheme } from "./theme-provider";
+import { ThemeProvider, useTheme, getThemeInitScript } from "./theme-provider";
 import type { ReactNode } from "react";
 import type { ThemeProviderProps } from "./theme-provider";
 
@@ -89,5 +89,66 @@ describe("ThemeProvider", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrapper() });
     expect(result.current.theme).toBe("dark");
     expect(result.current.resolvedTheme).toBe("dark");
+  });
+});
+
+describe("toggleTheme", () => {
+  it("switches from dark to light", () => {
+    function Inner() {
+      const { resolvedTheme, toggleTheme } = useTheme();
+      return (
+        <>
+          <span data-testid="resolved">{resolvedTheme}</span>
+          <button data-testid="toggle" onClick={toggleTheme} />
+        </>
+      );
+    }
+    render(
+      <ThemeProvider defaultTheme="dark">
+        <Inner />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId("resolved").textContent).toBe("dark");
+    act(() => screen.getByTestId("toggle").click());
+    expect(screen.getByTestId("resolved").textContent).toBe("light");
+  });
+
+  it("toggles back from light to dark", () => {
+    function Inner() {
+      const { resolvedTheme, toggleTheme } = useTheme();
+      return (
+        <>
+          <span data-testid="resolved">{resolvedTheme}</span>
+          <button data-testid="toggle" onClick={toggleTheme} />
+        </>
+      );
+    }
+    render(
+      <ThemeProvider defaultTheme="light">
+        <Inner />
+      </ThemeProvider>,
+    );
+    act(() => screen.getByTestId("toggle").click());
+    expect(screen.getByTestId("resolved").textContent).toBe("dark");
+    act(() => screen.getByTestId("toggle").click());
+    expect(screen.getByTestId("resolved").textContent).toBe("light");
+  });
+});
+
+describe("getThemeInitScript", () => {
+  it("returns a non-empty script string", () => {
+    const script = getThemeInitScript();
+    expect(typeof script).toBe("string");
+    expect(script.length).toBeGreaterThan(0);
+  });
+
+  it("uses custom storageKey", () => {
+    const script = getThemeInitScript({ storageKey: "my-theme" });
+    expect(script).toContain("my-theme");
+  });
+
+  it("uses default storageKey 'theme'", () => {
+    const script = getThemeInitScript();
+    expect(script).toContain('"theme"');
   });
 });

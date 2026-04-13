@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { usePersistentState } from "./use-persistent-state";
 
 export type Theme = "light" | "dark" | "system";
@@ -15,6 +15,7 @@ export interface ThemeContextValue {
   theme: Theme;
   resolvedTheme: "light" | "dark";
   setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
@@ -46,6 +47,10 @@ export function ThemeProvider({
 
   const resolvedTheme = theme === "system" ? systemTheme : theme;
 
+  const toggleTheme = useCallback(() => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  }, [resolvedTheme, setTheme]);
+
   // Apply attribute to documentElement
   useEffect(() => {
     const el = document.documentElement;
@@ -61,8 +66,8 @@ export function ThemeProvider({
   }, [resolvedTheme, attribute, value]);
 
   const ctx = useMemo<ThemeContextValue>(
-    () => ({ theme, resolvedTheme, setTheme }),
-    [theme, resolvedTheme, setTheme],
+    () => ({ theme, resolvedTheme, setTheme, toggleTheme }),
+    [theme, resolvedTheme, setTheme, toggleTheme],
   );
 
   return <ThemeContext.Provider value={ctx}>{children}</ThemeContext.Provider>;
@@ -74,4 +79,9 @@ export function useTheme(): ThemeContextValue {
     throw new Error("useTheme must be used within a ThemeProvider");
   }
   return ctx;
+}
+
+export function getThemeInitScript(options?: { storageKey?: string }): string {
+  const key = options?.storageKey ?? "theme";
+  return `try{var t=localStorage.getItem(${JSON.stringify(key)});if(t==="light")document.documentElement.classList.remove("dark");else if(t!=="dark"&&!t&&window.matchMedia("(prefers-color-scheme:light)").matches)document.documentElement.classList.remove("dark")}catch(e){}`;
 }
