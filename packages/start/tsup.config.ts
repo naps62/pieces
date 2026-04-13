@@ -8,7 +8,7 @@ export default defineConfig({
     router: "src/router.ts",
     auth: "src/auth.ts",
     schema: "src/schema.ts",
-    // root: "src/root.tsx",         // added in Task 7
+    root: "src/root.tsx",
   },
   format: ["esm", "cjs"],
   dts: true,
