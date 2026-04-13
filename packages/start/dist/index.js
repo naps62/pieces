@@ -1,6 +1,6 @@
 import {
   createViteConfig
-} from "./chunk-M7O5HSWG.js";
+} from "./chunk-RJQAG6QG.js";
 import {
   createAppRouter
 } from "./chunk-IBAQ4H6Q.js";

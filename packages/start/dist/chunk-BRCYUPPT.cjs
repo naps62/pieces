@@ -12,15 +12,29 @@ function createViteConfig(options = {}) {
     ...userConfig,
     resolve: {
       ...userConfig.resolve,
-      alias: {
-        "@naps62/ui": _path2.default.resolve(
-          "./node_modules/@naps62/ui/packages/ui/dist/index.js"
-        ),
-        "@naps62/start": _path2.default.resolve(
-          "./node_modules/@naps62/start/packages/start/dist"
-        ),
-        ..._optionalChain([userConfig, 'access', _ => _.resolve, 'optionalAccess', _2 => _2.alias])
-      }
+      alias: [
+        {
+          find: /^@naps62\/start\/(.+)$/,
+          replacement: _path2.default.resolve(
+            "./node_modules/@naps62/start/packages/start/dist/$1.js"
+          )
+        },
+        {
+          find: "@naps62/start",
+          replacement: _path2.default.resolve(
+            "./node_modules/@naps62/start/packages/start/dist/index.js"
+          )
+        },
+        {
+          find: "@naps62/ui",
+          replacement: _path2.default.resolve(
+            "./node_modules/@naps62/ui/packages/ui/dist/index.js"
+          )
+        },
+        ...Array.isArray(_optionalChain([userConfig, 'access', _ => _.resolve, 'optionalAccess', _2 => _2.alias])) ? userConfig.resolve.alias : Object.entries(_nullishCoalesce(_optionalChain([userConfig, 'access', _3 => _3.resolve, 'optionalAccess', _4 => _4.alias]), () => ( {}))).map(
+          ([find, replacement]) => ({ find, replacement })
+        )
+      ]
     },
     server: {
       host: "0.0.0.0",
@@ -30,12 +44,12 @@ function createViteConfig(options = {}) {
     },
     optimizeDeps: {
       exclude: [
-        ..._nullishCoalesce(_optionalChain([userConfig, 'access', _3 => _3.optimizeDeps, 'optionalAccess', _4 => _4.exclude]), () => ( []))
+        ..._nullishCoalesce(_optionalChain([userConfig, 'access', _5 => _5.optimizeDeps, 'optionalAccess', _6 => _6.exclude]), () => ( []))
       ]
     },
     ssr: {
       external: [
-        ..._nullishCoalesce(_optionalChain([userConfig, 'access', _5 => _5.ssr, 'optionalAccess', _6 => _6.external]), () => ( []))
+        ..._nullishCoalesce(_optionalChain([userConfig, 'access', _7 => _7.ssr, 'optionalAccess', _8 => _8.external]), () => ( []))
       ]
     },
     plugins: [

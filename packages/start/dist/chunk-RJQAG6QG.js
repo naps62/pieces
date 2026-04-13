@@ -12,15 +12,29 @@ function createViteConfig(options = {}) {
     ...userConfig,
     resolve: {
       ...userConfig.resolve,
-      alias: {
-        "@naps62/ui": path.resolve(
-          "./node_modules/@naps62/ui/packages/ui/dist/index.js"
-        ),
-        "@naps62/start": path.resolve(
-          "./node_modules/@naps62/start/packages/start/dist"
-        ),
-        ...userConfig.resolve?.alias
-      }
+      alias: [
+        {
+          find: /^@naps62\/start\/(.+)$/,
+          replacement: path.resolve(
+            "./node_modules/@naps62/start/packages/start/dist/$1.js"
+          )
+        },
+        {
+          find: "@naps62/start",
+          replacement: path.resolve(
+            "./node_modules/@naps62/start/packages/start/dist/index.js"
+          )
+        },
+        {
+          find: "@naps62/ui",
+          replacement: path.resolve(
+            "./node_modules/@naps62/ui/packages/ui/dist/index.js"
+          )
+        },
+        ...Array.isArray(userConfig.resolve?.alias) ? userConfig.resolve.alias : Object.entries(userConfig.resolve?.alias ?? {}).map(
+          ([find, replacement]) => ({ find, replacement })
+        )
+      ]
     },
     server: {
       host: "0.0.0.0",
