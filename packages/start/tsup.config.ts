@@ -3,11 +3,11 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   entry: {
     index: "src/index.ts",
-    // vite: "src/vite.ts",          // added in Task 2
-    // "entry-client": "src/entry-client.tsx", // added in Task 3
-    // router: "src/router.ts",      // added in Task 4
+    vite: "src/vite.ts",
+    "entry-client": "src/entry-client.tsx",
+    router: "src/router.ts",
     // auth: "src/auth.ts",          // added in Task 6
-    // schema: "src/schema.ts",      // added in Task 5
+    schema: "src/schema.ts",
     // root: "src/root.tsx",         // added in Task 7
   },
   format: ["esm", "cjs"],
