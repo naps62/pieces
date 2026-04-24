@@ -5,7 +5,7 @@ import "./chunk-THZKQPHU.js";
 import "./chunk-Q4Q4AQL5.js";
 import {
   createViteConfig
-} from "./chunk-IBVCXRLW.js";
+} from "./chunk-FLT5CJ2R.js";
 import {
   createAppRouter
 } from "./chunk-IBAQ4H6Q.js";

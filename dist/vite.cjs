@@ -1,7 +1,7 @@
 "use strict";Object.defineProperty(exports, "__esModule", {value: true});
 
-var _chunkNQ7PPQQ2cjs = require('./chunk-NQ7PPQQ2.cjs');
+var _chunkHQZHXUJZcjs = require('./chunk-HQZHXUJZ.cjs');
 require('./chunk-75ZPJI57.cjs');
 
 
-exports.createViteConfig = _chunkNQ7PPQQ2cjs.createViteConfig;
+exports.createViteConfig = _chunkHQZHXUJZcjs.createViteConfig;

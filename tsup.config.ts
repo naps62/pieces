@@ -12,7 +12,7 @@ export default defineConfig({
     root: "src/root.tsx",
     "job-runner": "src/job-runner/index.ts",
     observability: "src/observability/index.ts",
-    "metrics-plugin": "src/observability/metrics-plugin.ts",
+    "observability/server": "src/observability/server.ts",
   },
   format: ["esm", "cjs"],
   dts: true,

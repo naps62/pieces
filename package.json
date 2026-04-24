@@ -54,10 +54,10 @@
       "import": "./dist/observability.js",
       "require": "./dist/observability.cjs"
     },
-    "./metrics-plugin": {
-      "types": "./dist/metrics-plugin.d.ts",
-      "import": "./dist/metrics-plugin.js",
-      "require": "./dist/metrics-plugin.cjs"
+    "./observability/server": {
+      "types": "./dist/observability/server.d.ts",
+      "import": "./dist/observability/server.js",
+      "require": "./dist/observability/server.cjs"
     }
   },
   "files": [
