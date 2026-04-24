@@ -1,17 +1,3 @@
-import {
-  isAllowed,
-  isLocalNetworkIp
-} from "./chunk-LKINEZ23.js";
-import {
-  logger
-} from "./chunk-THZKQPHU.js";
-import {
-  httpRequestDurationSeconds,
-  httpRequestsTotal,
-  jobDurationSeconds,
-  jobsTotal,
-  register
-} from "./chunk-Q4Q4AQL5.js";
 import "./chunk-MLKGABMK.js";
 
 // src/observability/middleware.ts
@@ -26,8 +12,8 @@ function tryGetRoute(result, fallback) {
 }
 var loggingMiddleware = createMiddleware({ type: "request" }).server(
   async ({ next, request, pathname }) => {
-    const { logger: logger2 } = await import("./logger-YEK7GN4X.js");
-    const { httpRequestsTotal: httpRequestsTotal2, httpRequestDurationSeconds: httpRequestDurationSeconds2 } = await import("./metrics-GILTHZM7.js");
+    const { logger } = await import("./logger-YEK7GN4X.js");
+    const { httpRequestsTotal, httpRequestDurationSeconds } = await import("./metrics-GILTHZM7.js");
     const start = process.hrtime.bigint();
     const method = request.method;
     try {
@@ -35,9 +21,9 @@ var loggingMiddleware = createMiddleware({ type: "request" }).server(
       const duration = Number(process.hrtime.bigint() - start) / 1e9;
       const status = result.response.status;
       const route = tryGetRoute(result, "unknown");
-      httpRequestsTotal2.inc({ method, route, status });
-      httpRequestDurationSeconds2.observe({ method, route, status }, duration);
-      logger2.info(
+      httpRequestsTotal.inc({ method, route, status });
+      httpRequestDurationSeconds.observe({ method, route, status }, duration);
+      logger.info(
         {
           method,
           path: pathname,
@@ -50,12 +36,12 @@ var loggingMiddleware = createMiddleware({ type: "request" }).server(
       return result;
     } catch (err) {
       const duration = Number(process.hrtime.bigint() - start) / 1e9;
-      httpRequestsTotal2.inc({ method, route: "unknown", status: 500 });
-      httpRequestDurationSeconds2.observe(
+      httpRequestsTotal.inc({ method, route: "unknown", status: 500 });
+      httpRequestDurationSeconds.observe(
         { method, route: "unknown", status: 500 },
         duration
       );
-      logger2.error(
+      logger.error(
         {
           method,
           path: pathname,
@@ -69,13 +55,5 @@ var loggingMiddleware = createMiddleware({ type: "request" }).server(
   }
 );
 export {
-  httpRequestDurationSeconds,
-  httpRequestsTotal,
-  isAllowed,
-  isLocalNetworkIp,
-  jobDurationSeconds,
-  jobsTotal,
-  logger,
-  loggingMiddleware,
-  register
+  loggingMiddleware
 };
