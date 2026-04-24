@@ -7,7 +7,8 @@ import path from "path";
 import { defineConfig } from "vite";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 function createViteConfig(options = {}) {
-  const { vite: userConfig = {} } = options;
+  const { vite: userConfig = {}, observability: observabilityOpt } = options;
+  const observability = observabilityOpt !== false;
   return defineConfig({
     ...userConfig,
     resolve: {
@@ -48,6 +49,7 @@ function createViteConfig(options = {}) {
     },
     plugins: [
       nitro({
+        plugins: observability ? ["@naps62/start/metrics-plugin"] : [],
         rollupConfig: {
           external: (id) => id.endsWith(".node")
         }

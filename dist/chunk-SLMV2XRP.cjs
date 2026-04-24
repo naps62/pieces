@@ -7,7 +7,8 @@ var _path = require('path'); var _path2 = _interopRequireDefault(_path);
 var _vite7 = require('vite');
 var _vitetsconfigpaths = require('vite-tsconfig-paths'); var _vitetsconfigpaths2 = _interopRequireDefault(_vitetsconfigpaths);
 function createViteConfig(options = {}) {
-  const { vite: userConfig = {} } = options;
+  const { vite: userConfig = {}, observability: observabilityOpt } = options;
+  const observability = observabilityOpt !== false;
   return _vite7.defineConfig.call(void 0, {
     ...userConfig,
     resolve: {
@@ -48,6 +49,7 @@ function createViteConfig(options = {}) {
     },
     plugins: [
       _vite5.nitro.call(void 0, {
+        plugins: observability ? ["@naps62/start/metrics-plugin"] : [],
         rollupConfig: {
           external: (id) => id.endsWith(".node")
         }

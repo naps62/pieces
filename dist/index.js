@@ -3,7 +3,7 @@ import {
 } from "./chunk-5C4IUCLF.js";
 import {
   createViteConfig
-} from "./chunk-FLT5CJ2R.js";
+} from "./chunk-QKA55AVG.js";
 import {
   createAppRouter
 } from "./chunk-IBAQ4H6Q.js";
