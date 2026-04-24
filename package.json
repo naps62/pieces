@@ -48,6 +48,16 @@
       "types": "./dist/job-runner.d.ts",
       "import": "./dist/job-runner.js",
       "require": "./dist/job-runner.cjs"
+    },
+    "./observability": {
+      "types": "./dist/observability.d.ts",
+      "import": "./dist/observability.js",
+      "require": "./dist/observability.cjs"
+    },
+    "./metrics-plugin": {
+      "types": "./dist/metrics-plugin.d.ts",
+      "import": "./dist/metrics-plugin.js",
+      "require": "./dist/metrics-plugin.cjs"
     }
   },
   "files": [
