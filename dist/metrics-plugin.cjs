@@ -1,4 +1,4 @@
-"use strict";Object.defineProperty(exports, "__esModule", {value: true}); function _nullishCoalesce(lhs, rhsFn) { if (lhs != null) { return lhs; } else { return rhsFn(); } }
+"use strict";Object.defineProperty(exports, "__esModule", {value: true}); function _nullishCoalesce(lhs, rhsFn) { if (lhs != null) { return lhs; } else { return rhsFn(); } } function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
 var _chunkT6TROFNRcjs = require('./chunk-T6TROFNR.cjs');
 
@@ -8,33 +8,34 @@ var _chunkNNHGSWKOcjs = require('./chunk-NNHGSWKO.cjs');
 require('./chunk-75ZPJI57.cjs');
 
 // src/observability/metrics-plugin.ts
-var _http = require('http');
 var _nitro = require('nitro');
-var metrics_plugin_default = _nitro.definePlugin.call(void 0, () => {
-  if (globalThis.__metricsServer) return;
-  const port = Number(process.env.METRICS_PORT) || 9e3;
+function clientIp(event) {
+  const xff = event.req.headers.get("x-forwarded-for");
+  if (xff) return xff.split(",")[0].trim();
+  const xreal = event.req.headers.get("x-real-ip");
+  if (xreal) return xreal.trim();
+  const peer = _optionalChain([event, 'access', _ => _.runtime, 'optionalAccess', _2 => _2.node, 'optionalAccess', _3 => _3.req, 'optionalAccess', _4 => _4.socket, 'optionalAccess', _5 => _5.remoteAddress]);
+  if (peer) return peer.replace(/^::ffff:/, "");
+  return "127.0.0.1";
+}
+var metrics_plugin_default = _nitro.definePlugin.call(void 0, (nitro) => {
   const allowlist = (_nullishCoalesce(process.env.METRICS_ALLOWED_IPS, () => ( ""))).split(",").map((s) => s.trim()).filter(Boolean);
-  const server = _http.createServer.call(void 0, async (req, res) => {
-    const ip = (_nullishCoalesce(req.socket.remoteAddress, () => ( ""))).replace(/^::ffff:/, "");
+  nitro.hooks.hook("request", async (event) => {
+    const req = event.req;
+    if (req.method !== "GET") return;
+    const pathname = new URL(req.url).pathname;
+    if (pathname !== "/metrics") return;
+    const ip = clientIp(event);
     if (!_chunkT6TROFNRcjs.isAllowed.call(void 0, ip, allowlist)) {
-      res.writeHead(403).end("forbidden");
-      _chunkNNHGSWKOcjs.logger.warn({ ip, path: req.url }, "metrics_access_denied");
-      return;
+      _chunkNNHGSWKOcjs.logger.warn({ ip }, "metrics_access_denied");
+      throw new (0, _nitro.HTTPResponse)("forbidden", { status: 403 });
     }
-    if (req.url === "/metrics" && req.method === "GET") {
-      const body = await _chunkNNHGSWKOcjs.register.metrics();
-      res.writeHead(200, { "Content-Type": _chunkNNHGSWKOcjs.register.contentType }).end(body);
-      return;
-    }
-    res.writeHead(404).end("not found");
+    const body = await _chunkNNHGSWKOcjs.register.metrics();
+    throw new (0, _nitro.HTTPResponse)(body, {
+      status: 200,
+      headers: { "Content-Type": _chunkNNHGSWKOcjs.register.contentType }
+    });
   });
-  server.listen(port, "0.0.0.0", () => {
-    _chunkNNHGSWKOcjs.logger.info({ port }, "metrics_server_listening");
-  });
-  server.on("error", (err) => {
-    _chunkNNHGSWKOcjs.logger.error({ err: err.message }, "metrics_server_error");
-  });
-  globalThis.__metricsServer = server;
 });
 
 
