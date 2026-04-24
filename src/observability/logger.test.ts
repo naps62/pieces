@@ -19,7 +19,6 @@ describe("logger", () => {
     const { logger } = await import("./logger");
     const chunks: string[] = [];
     const origWrite = process.stdout.write.bind(process.stdout);
-    // @ts-expect-error - monkeypatch for capture
     process.stdout.write = (chunk: any) => {
       chunks.push(String(chunk));
       return true;
@@ -27,7 +26,6 @@ describe("logger", () => {
     try {
       logger.info({ foo: "bar" }, "hello");
     } finally {
-      // @ts-expect-error
       process.stdout.write = origWrite;
     }
     const line = chunks.find((c) => c.includes("hello"));
@@ -46,7 +44,6 @@ describe("logger", () => {
     const { logger } = await import("./logger");
     const chunks: string[] = [];
     const origWrite = process.stdout.write.bind(process.stdout);
-    // @ts-expect-error
     process.stdout.write = (chunk: any) => {
       chunks.push(String(chunk));
       return true;
@@ -57,7 +54,6 @@ describe("logger", () => {
         "req",
       );
     } finally {
-      // @ts-expect-error
       process.stdout.write = origWrite;
     }
     const line = chunks.find((c) => c.includes('"req"'));
