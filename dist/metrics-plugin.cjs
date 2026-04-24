@@ -23,7 +23,7 @@ var metrics_plugin_default = _nitro.definePlugin.call(void 0, (nitro) => {
   nitro.hooks.hook("request", async (event) => {
     const req = event.req;
     if (req.method !== "GET") return;
-    const pathname = new URL(req.url).pathname;
+    const pathname = new URL(req.url, "http://localhost").pathname;
     if (pathname !== "/metrics") return;
     const ip = clientIp(event);
     if (!_chunkT6TROFNRcjs.isAllowed.call(void 0, ip, allowlist)) {

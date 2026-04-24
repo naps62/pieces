@@ -29,7 +29,8 @@ export default defineNitroPlugin((nitro) => {
   nitro.hooks.hook("request", async (event) => {
     const req = event.req;
     if (req.method !== "GET") return;
-    const pathname = new URL(req.url).pathname;
+    // req.url may be absolute or relative depending on runtime — normalize.
+    const pathname = new URL(req.url, "http://localhost").pathname;
     if (pathname !== "/metrics") return;
 
     const ip = clientIp(event);
