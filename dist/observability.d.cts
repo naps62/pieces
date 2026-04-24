@@ -6,8 +6,8 @@ import * as _tanstack_react_start from '@tanstack/react-start';
 declare const logger: pino.Logger<never, boolean>;
 type Logger = typeof logger;
 
-declare const httpRequestsTotal: Counter<"method" | "route" | "status">;
-declare const httpRequestDurationSeconds: Histogram<"method" | "route" | "status">;
+declare const httpRequestsTotal: Counter<"status" | "method" | "route">;
+declare const httpRequestDurationSeconds: Histogram<"status" | "method" | "route">;
 declare const jobsTotal: Counter<"status" | "job">;
 declare const jobDurationSeconds: Histogram<"status" | "job">;
 

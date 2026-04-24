@@ -61,44 +61,6 @@ var jobDurationSeconds = new (0, _promclient.Histogram)({
   buckets: [0.1, 0.5, 1, 5, 30, 60, 300, 600, 1800]
 });
 
-// src/observability/ip-access.ts
-var _net = require('net');
-var PRIVATE_CIDRS = [
-  [2130706432, 8],
-  // 127.0.0.0/8
-  [167772160, 8],
-  // 10.0.0.0/8
-  [2886729728, 12],
-  // 172.16.0.0/12
-  [3232235520, 16]
-  // 192.168.0.0/16
-];
-function ipv4ToInt(ip) {
-  const parts = ip.split(".");
-  if (parts.length !== 4) return null;
-  let n = 0;
-  for (const p of parts) {
-    const v = Number(p);
-    if (!Number.isInteger(v) || v < 0 || v > 255) return null;
-    n = (n << 8 | v) >>> 0;
-  }
-  return n;
-}
-function isLocalNetworkIp(ip) {
-  if (!ip) return false;
-  if (ip === "::1") return true;
-  const clean = ip.startsWith("::ffff:") ? ip.slice(7) : ip;
-  if (!_net.isIP.call(void 0, clean)) return false;
-  const n = ipv4ToInt(clean);
-  if (n === null) return false;
-  return PRIVATE_CIDRS.some(
-    ([base, bits]) => n >>> 32 - bits === base >>> 32 - bits
-  );
-}
-function isAllowed(ip, allowlist) {
-  if (allowlist.length === 0) return isLocalNetworkIp(ip);
-  return allowlist.includes(ip);
-}
 
 
 
@@ -106,7 +68,4 @@ function isAllowed(ip, allowlist) {
 
 
 
-
-
-
-exports.logger = logger; exports.register = _promclient.register; exports.httpRequestsTotal = httpRequestsTotal; exports.httpRequestDurationSeconds = httpRequestDurationSeconds; exports.jobsTotal = jobsTotal; exports.jobDurationSeconds = jobDurationSeconds; exports.isLocalNetworkIp = isLocalNetworkIp; exports.isAllowed = isAllowed;
+exports.logger = logger; exports.register = _promclient.register; exports.httpRequestsTotal = httpRequestsTotal; exports.httpRequestDurationSeconds = httpRequestDurationSeconds; exports.jobsTotal = jobsTotal; exports.jobDurationSeconds = jobDurationSeconds;

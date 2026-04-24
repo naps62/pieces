@@ -1,8 +1,10 @@
 import {
-  isAllowed,
+  isAllowed
+} from "./chunk-LKINEZ23.js";
+import {
   logger,
   register
-} from "./chunk-YPJQKMWJ.js";
+} from "./chunk-YGN6LMXH.js";
 import "./chunk-MLKGABMK.js";
 
 // src/observability/metrics-plugin.ts

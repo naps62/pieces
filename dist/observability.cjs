@@ -1,13 +1,15 @@
 "use strict";Object.defineProperty(exports, "__esModule", {value: true}); function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
 
+var _chunkT6TROFNRcjs = require('./chunk-T6TROFNR.cjs');
 
 
 
 
 
 
-var _chunkMNIVAKB6cjs = require('./chunk-MNIVAKB6.cjs');
+
+var _chunkNNHGSWKOcjs = require('./chunk-NNHGSWKO.cjs');
 require('./chunk-75ZPJI57.cjs');
 
 // src/observability/middleware.ts
@@ -29,9 +31,9 @@ var loggingMiddleware = _reactstart.createMiddleware.call(void 0, { type: "reque
       const duration = Number(process.hrtime.bigint() - start) / 1e9;
       const status = result.response.status;
       const route = tryGetRoute(result, "unknown");
-      _chunkMNIVAKB6cjs.httpRequestsTotal.inc({ method, route, status });
-      _chunkMNIVAKB6cjs.httpRequestDurationSeconds.observe({ method, route, status }, duration);
-      _chunkMNIVAKB6cjs.logger.info(
+      _chunkNNHGSWKOcjs.httpRequestsTotal.inc({ method, route, status });
+      _chunkNNHGSWKOcjs.httpRequestDurationSeconds.observe({ method, route, status }, duration);
+      _chunkNNHGSWKOcjs.logger.info(
         {
           method,
           path: pathname,
@@ -44,12 +46,12 @@ var loggingMiddleware = _reactstart.createMiddleware.call(void 0, { type: "reque
       return result;
     } catch (err) {
       const duration = Number(process.hrtime.bigint() - start) / 1e9;
-      _chunkMNIVAKB6cjs.httpRequestsTotal.inc({ method, route: "unknown", status: 500 });
-      _chunkMNIVAKB6cjs.httpRequestDurationSeconds.observe(
+      _chunkNNHGSWKOcjs.httpRequestsTotal.inc({ method, route: "unknown", status: 500 });
+      _chunkNNHGSWKOcjs.httpRequestDurationSeconds.observe(
         { method, route: "unknown", status: 500 },
         duration
       );
-      _chunkMNIVAKB6cjs.logger.error(
+      _chunkNNHGSWKOcjs.logger.error(
         {
           method,
           path: pathname,
@@ -72,4 +74,4 @@ var loggingMiddleware = _reactstart.createMiddleware.call(void 0, { type: "reque
 
 
 
-exports.httpRequestDurationSeconds = _chunkMNIVAKB6cjs.httpRequestDurationSeconds; exports.httpRequestsTotal = _chunkMNIVAKB6cjs.httpRequestsTotal; exports.isAllowed = _chunkMNIVAKB6cjs.isAllowed; exports.isLocalNetworkIp = _chunkMNIVAKB6cjs.isLocalNetworkIp; exports.jobDurationSeconds = _chunkMNIVAKB6cjs.jobDurationSeconds; exports.jobsTotal = _chunkMNIVAKB6cjs.jobsTotal; exports.logger = _chunkMNIVAKB6cjs.logger; exports.loggingMiddleware = loggingMiddleware; exports.register = _chunkMNIVAKB6cjs.register;
+exports.httpRequestDurationSeconds = _chunkNNHGSWKOcjs.httpRequestDurationSeconds; exports.httpRequestsTotal = _chunkNNHGSWKOcjs.httpRequestsTotal; exports.isAllowed = _chunkT6TROFNRcjs.isAllowed; exports.isLocalNetworkIp = _chunkT6TROFNRcjs.isLocalNetworkIp; exports.jobDurationSeconds = _chunkNNHGSWKOcjs.jobDurationSeconds; exports.jobsTotal = _chunkNNHGSWKOcjs.jobsTotal; exports.logger = _chunkNNHGSWKOcjs.logger; exports.loggingMiddleware = loggingMiddleware; exports.register = _chunkNNHGSWKOcjs.register;
