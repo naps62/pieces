@@ -3,9 +3,18 @@ var _vite = require('@tailwindcss/vite'); var _vite2 = _interopRequireDefault(_v
 var _vite3 = require('@tanstack/react-start/plugin/vite');
 var _pluginreact = require('@vitejs/plugin-react'); var _pluginreact2 = _interopRequireDefault(_pluginreact);
 var _vite5 = require('nitro/vite');
+var _module = require('module');
 var _path = require('path'); var _path2 = _interopRequireDefault(_path);
 var _vite7 = require('vite');
 var _vitetsconfigpaths = require('vite-tsconfig-paths'); var _vitetsconfigpaths2 = _interopRequireDefault(_vitetsconfigpaths);
+var requireFromHere = _module.createRequire.call(void 0, import.meta.url);
+function resolveMetricsPlugin() {
+  try {
+    return requireFromHere.resolve("@naps62/start/metrics-plugin");
+  } catch (e) {
+    return null;
+  }
+}
 function createViteConfig(options = {}) {
   const { vite: userConfig = {}, observability: observabilityOpt } = options;
   const observability = observabilityOpt !== false;
@@ -49,7 +58,11 @@ function createViteConfig(options = {}) {
     },
     plugins: [
       _vite5.nitro.call(void 0, {
-        plugins: observability ? ["@naps62/start/metrics-plugin"] : [],
+        plugins: (() => {
+          if (!observability) return [];
+          const resolved = resolveMetricsPlugin();
+          return resolved ? [resolved] : [];
+        })(),
         rollupConfig: {
           external: (id) => id.endsWith(".node")
         }

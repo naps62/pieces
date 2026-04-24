@@ -3,9 +3,18 @@ import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
+import { createRequire } from "module";
 import path from "path";
 import { defineConfig } from "vite";
 import viteTsConfigPaths from "vite-tsconfig-paths";
+var requireFromHere = createRequire(import.meta.url);
+function resolveMetricsPlugin() {
+  try {
+    return requireFromHere.resolve("@naps62/start/metrics-plugin");
+  } catch {
+    return null;
+  }
+}
 function createViteConfig(options = {}) {
   const { vite: userConfig = {}, observability: observabilityOpt } = options;
   const observability = observabilityOpt !== false;
@@ -49,7 +58,11 @@ function createViteConfig(options = {}) {
     },
     plugins: [
       nitro({
-        plugins: observability ? ["@naps62/start/metrics-plugin"] : [],
+        plugins: (() => {
+          if (!observability) return [];
+          const resolved = resolveMetricsPlugin();
+          return resolved ? [resolved] : [];
+        })(),
         rollupConfig: {
           external: (id) => id.endsWith(".node")
         }

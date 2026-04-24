@@ -2,10 +2,24 @@ import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
+import { createRequire } from "node:module";
 import path from "path";
 import type { PluginOption, UserConfig } from "vite";
 import { defineConfig } from "vite";
 import viteTsConfigPaths from "vite-tsconfig-paths";
+
+// Resolve @naps62/start/metrics-plugin to an absolute file path at config
+// time — Nitro's plugin loader expects filesystem paths, not package
+// specifiers. createRequire from this module's URL resolves through the
+// consuming app's node_modules, where @naps62/start lives.
+const requireFromHere = createRequire(import.meta.url);
+function resolveMetricsPlugin(): string | null {
+  try {
+    return requireFromHere.resolve("@naps62/start/metrics-plugin");
+  } catch {
+    return null;
+  }
+}
 
 export interface StartViteConfig {
   vite?: Omit<UserConfig, "plugins">;
@@ -58,7 +72,11 @@ export function createViteConfig(options: StartViteConfig = {}) {
     },
     plugins: [
       nitro({
-        plugins: observability ? ["@naps62/start/metrics-plugin"] : [],
+        plugins: (() => {
+          if (!observability) return [];
+          const resolved = resolveMetricsPlugin();
+          return resolved ? [resolved] : [];
+        })(),
         rollupConfig: {
           external: (id: string) => id.endsWith(".node"),
         },
