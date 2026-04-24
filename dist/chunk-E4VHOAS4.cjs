@@ -1,8 +1,10 @@
 "use strict";Object.defineProperty(exports, "__esModule", {value: true}); function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; } function _nullishCoalesce(lhs, rhsFn) { if (lhs != null) { return lhs; } else { return rhsFn(); } } function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }
 
+var _chunkZFR3HIOOcjs = require('./chunk-ZFR3HIOO.cjs');
 
 
-var _chunkNNHGSWKOcjs = require('./chunk-NNHGSWKO.cjs');
+
+var _chunkZZK7GFOCcjs = require('./chunk-ZZK7GFOC.cjs');
 
 
 var _chunkWDBYORVZcjs = require('./chunk-WDBYORVZ.cjs');
@@ -99,7 +101,7 @@ function createJobRunner(config) {
     const { jobId, prompt } = pgBossJob.data;
     const [row] = await db.select({ name: _chunkWDBYORVZcjs.llmJobs.name }).from(_chunkWDBYORVZcjs.llmJobs).where(_drizzleorm.eq.call(void 0, _chunkWDBYORVZcjs.llmJobs.id, jobId)).limit(1);
     const jobName = _nullishCoalesce(_optionalChain([row, 'optionalAccess', _ => _.name]), () => ( "unknown"));
-    const log = _chunkNNHGSWKOcjs.logger.child({ job: jobName, job_id: jobId });
+    const log = _chunkZFR3HIOOcjs.logger.child({ job: jobName, job_id: jobId });
     const start = process.hrtime.bigint();
     log.info("job_started");
     await db.update(_chunkWDBYORVZcjs.llmJobs).set({ status: "running", startedAt: /* @__PURE__ */ new Date() }).where(_drizzleorm.eq.call(void 0, _chunkWDBYORVZcjs.llmJobs.id, jobId));
@@ -114,8 +116,8 @@ function createJobRunner(config) {
     };
     const recordOutcome = async (status, exitCode, error) => {
       const duration = Number(process.hrtime.bigint() - start) / 1e9;
-      _chunkNNHGSWKOcjs.jobsTotal.inc({ job: jobName, status });
-      _chunkNNHGSWKOcjs.jobDurationSeconds.observe({ job: jobName, status }, duration);
+      _chunkZZK7GFOCcjs.jobsTotal.inc({ job: jobName, status });
+      _chunkZZK7GFOCcjs.jobDurationSeconds.observe({ job: jobName, status }, duration);
       if (status === "success") {
         log.info({ duration_ms: Math.round(duration * 1e3) }, "job_completed");
       } else {

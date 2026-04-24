@@ -3,8 +3,10 @@
 var _chunkT6TROFNRcjs = require('./chunk-T6TROFNR.cjs');
 
 
+var _chunkZFR3HIOOcjs = require('./chunk-ZFR3HIOO.cjs');
 
-var _chunkNNHGSWKOcjs = require('./chunk-NNHGSWKO.cjs');
+
+var _chunkZZK7GFOCcjs = require('./chunk-ZZK7GFOC.cjs');
 require('./chunk-75ZPJI57.cjs');
 
 // src/observability/metrics-plugin.ts
@@ -27,13 +29,13 @@ var metrics_plugin_default = _nitro.definePlugin.call(void 0, (nitro) => {
     if (pathname !== "/metrics") return;
     const ip = clientIp(event);
     if (!_chunkT6TROFNRcjs.isAllowed.call(void 0, ip, allowlist)) {
-      _chunkNNHGSWKOcjs.logger.warn({ ip }, "metrics_access_denied");
+      _chunkZFR3HIOOcjs.logger.warn({ ip }, "metrics_access_denied");
       throw new (0, _nitro.HTTPResponse)("forbidden", { status: 403 });
     }
-    const body = await _chunkNNHGSWKOcjs.register.metrics();
+    const body = await _chunkZZK7GFOCcjs.register.metrics();
     throw new (0, _nitro.HTTPResponse)(body, {
       status: 200,
-      headers: { "Content-Type": _chunkNNHGSWKOcjs.register.contentType }
+      headers: { "Content-Type": _chunkZZK7GFOCcjs.register.contentType }
     });
   });
 });

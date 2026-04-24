@@ -1,6 +1,4 @@
 import { createMiddleware } from "@tanstack/react-start";
-import { logger } from "./logger";
-import { httpRequestsTotal, httpRequestDurationSeconds } from "./metrics";
 
 /**
  * Attempt to extract a low-cardinality route id from the request middleware
@@ -18,15 +16,23 @@ function tryGetRoute(result: unknown, fallback: string): string {
   return fallback;
 }
 
+// The `.server(...)` callback only runs server-side. Imports for logger
+// and metrics live INSIDE the callback so the module's top-level import
+// graph stays client-safe — the client bundle never loads pino, prom-client,
+// or node:net.
 export const loggingMiddleware = createMiddleware({ type: "request" }).server(
   async ({ next, request, pathname }) => {
+    const { logger } = await import("./logger");
+    const { httpRequestsTotal, httpRequestDurationSeconds } = await import(
+      "./metrics"
+    );
+
     const start = process.hrtime.bigint();
     const method = request.method;
 
     try {
       const result = await next();
       const duration = Number(process.hrtime.bigint() - start) / 1e9;
-      // result.response is a full Web API Response object
       const status = result.response.status;
       const route = tryGetRoute(result, "unknown");
 
