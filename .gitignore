@@ -2,3 +2,7 @@ node_modules
 
 # Commit dist so git-install consumers get pre-built files
 !dist/
+
+# Git worktrees
+.worktrees/
+worktrees/
